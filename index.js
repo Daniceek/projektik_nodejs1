@@ -34,6 +34,7 @@ http.createServer((req, res) => {
         obj.den = d.getDay();
         obj.datum = d.getDate() + ". " + (d.getMonth()+1) + ". " + d.getFullYear();
         obj.formatdata = dateFormat(d, "dd.mm.yyyy");
+        obj.formatdataacasu = dateFormat(d, "dd.mm.yyyy HH:MM:ss");
         obj.cas = d.getHours() + ":" + d.getMinutes() + "." + d.getSeconds();
         obj.denvtydnu = DNY[d.getDay()];
         res.end(JSON.stringify(obj));
