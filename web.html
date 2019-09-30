@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danova Stránka</title>
+    <script>
+        function funkce() {
+            fetch("http://localhost:8888/datum").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    document.getElementById("den").innerHTML = obj.denvtydnu;
+                    document.getElementById("datum").innerHTML = obj.datum;
+                });
+            });
+        }
+    </script>
+</head>
+<body onload="funkce()">
+
+Dnes je: <b style='font-family: "Comic Sans MS"' id="den"></b> <b style='font-family: "Comic Sans MS"' id="datum"></b>
+
+</body>
+</html>
