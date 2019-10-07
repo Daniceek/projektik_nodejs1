@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danova stránka</title>
+    <script>
+        function funkce() {
+            fetch("http://localhost:8888/datum").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    document.getElementById("datum").innerHTML = obj.denvtydnu;
+                });
+            });
+            fetch("http://localhost:8888/svatky").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    document.getElementById("svatek").innerHTML = obj.svatek;
+                });
+            });
+        }
+    </script>
+</head>
+<body onload="funkce()">
+
+<h1>Vítejte na mé stránce</h1>
+<br>
+Dnes je <span id="datum"></span>, svátek má <span id="svatek"></span>
+<br><br>
+<img src="kralicek.jpg">
+
+</body>
+</html>
