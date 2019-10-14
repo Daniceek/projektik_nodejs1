@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Danova stránka</title>
+    <link rel="icon" href="https://www.regionalnipotravina.cz/files/ocenene-regionalni-potraviny/plzensky-kraj/Jablko-odruda-Julia.jpg">
     <script>
         function funkce() {
+            document.getElementById("den").valueAsDate = new Date();
+            svatekjindy();
             fetch("http://localhost:8888/datum").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
@@ -15,7 +18,24 @@
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("svatek").innerHTML = obj.svatek;
+                    document.getElementById("svatekzitra").innerHTML = obj.svatekzitra;
                 });
+            });
+        }
+        function svatekjindy() {
+            let d = document.getElementById("den").valueAsDate;
+            fetch("http://localhost:8888/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
+                if (d.getDate() === 1 && d.getMonth() === 4 || d.getDate() === 25 && d.getMonth() === 11){
+                    response.text().then(function(text) {
+                        let obj = JSON.parse(text);
+                        document.getElementById("svatekjindy").innerHTML = " je "+obj.svatek;
+                    });
+                } else {
+                    response.text().then(function(text) {
+                        let obj = JSON.parse(text);
+                        document.getElementById("svatekjindy").innerHTML = " má svátek "+obj.svatek;
+                    });
+                }
             });
         }
     </script>
@@ -24,8 +44,15 @@
 
 <h1>Vítejte na mé stránce</h1>
 <br>
-Dnes je <span id="datum"></span>, svátek má <span id="svatek"></span>
-<br><br>
+Dnes je <span id="datum"></span>, svátek má <span id="svatek"></span>. Zítra má svátek <span id="svatekzitra"></span>
+<br>
+<br>
+Zde si můžete vyhledat, kdo má v určitý den svátek
+<br>
+<input type="date" id="den" onchange="svatekjindy()"><span id="svatekjindy"></span>
+<br>
+<br>
+
 <img src="kralicek.jpg">
 
 </body>

@@ -1,6 +1,7 @@
 const http = require("http");
 const dateFormat = require("dateformat");
 const fs = require('fs');
+const  url = require("url");
 
 const DNY = ["Neděle","Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota"]
 const SVATKY = new Array();
@@ -43,7 +44,8 @@ function processStaticFles(res, fileName) {
 }
 
 http.createServer((req, res) => {
-    if (req.url === "/") {
+    let q = url.parse(req.url, true);
+    if (q.pathname === "/") {
         x++;
         processStaticFles(res, "/index.html");
         return;
@@ -53,22 +55,22 @@ http.createServer((req, res) => {
         processStaticFles(res, req.url);
         return;
     }
-    if (req.url === "/jinastranka") {
+    if (q.pathname === "/jinastranka") {
         res.writeHead(200, {"ContentType" : "text/html"});
         res.end('<html lang="cs"><head><meta charset="UTF8"></head><body>Našel jsi tajnou stránku</body></html>');
-    }  else if (req.url === "/json") {
+    }  else if (q.pathname === "/json") {
         res.writeHead(200, {"ContentType" : "application/json"});
         let obj = {};
         obj.jmeno = "Borec";
         obj.prijmeni = "Je Dan";
         res.end(JSON.stringify(obj));
-    }  else if (req.url === "/jsonpocet") {
+    }  else if (q.pathname === "/jsonpocet") {
         x++;
         res.writeHead(200, {"ContentType" : "application/json"});
         let obj = {};
         obj.pocet = x;
         res.end(JSON.stringify(obj));
-    } else if (req.url === "/datum") {
+    } else if (q.pathname === "/datum") {
         res.writeHead(200, {"ContentType" : "application/json",
             "Access-Control-Allow-Origin":"*"
         });
@@ -82,14 +84,26 @@ http.createServer((req, res) => {
         obj.cas = d.getHours() + ":" + d.getMinutes() + "." + d.getSeconds();
         obj.denvtydnu = DNY[d.getDay()];
         res.end(JSON.stringify(obj));
-    } else if (req.url === "/svatky") {
+    } else if (q.pathname === "/svatky") {
         res.writeHead(200, {"ContentType" : "application/json",
             "Access-Control-Allow-Origin":"*"
         });
-        let d = new Date();
+
         let obj = {};
-        obj.datum = d.getDate() + ". " + (d.getMonth()+1);
-        obj.svatek = SVATKY[d.getMonth()+1][d.getDate()];
+        if (q.query["m"] && q.query["d"] ) {
+            let d = q.query["d"];
+            let m = q.query["m"];
+            obj.datum = d+"."+m+".";
+            obj.svatek = SVATKY[m][d];
+        } else {
+            let d = new Date();
+            let dd = new Date();
+            dd.setDate(dd.getDate() + 1);
+            obj.datum = d.getDate() + ". " + (d.getMonth()+1);
+            obj.svatek = SVATKY[d.getMonth()+1][d.getDate()];
+            obj.svatekzitra = SVATKY[dd.getMonth()+1][dd.getDate()];
+        }
+
         res.end(JSON.stringify(obj));
     } else {
         res.writeHead(200, {"ContentType" : "text/html"});
