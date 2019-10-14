@@ -20,6 +20,7 @@ SVATKY[12] = [ "",'Iva', 'Blanka', 'Svatoslav', 'Barbora', 'Jitka', 'Mikuláš',
 
 
 let x = 0;
+let msgs = new Array();
 
 function processStaticFles(res, fileName) {
     fileName = fileName.substr(1);
@@ -103,9 +104,18 @@ http.createServer((req, res) => {
             obj.svatek = SVATKY[d.getMonth()+1][d.getDate()];
             obj.svatekzitra = SVATKY[dd.getMonth()+1][dd.getDate()];
         }
-
         res.end(JSON.stringify(obj));
-    } else {
+
+    } else if (q.pathname === "/chat/listmsgs") {
+        res.writeHead(200, {
+            "ContentType": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        });
+        let obj = {};
+        obj.messages = msgs;
+        res.end(JSON.stringify(obj));
+        }
+    else {
         res.writeHead(200, {"ContentType" : "text/html"});
         res.end('<html lang="cs"><head><meta charset="UTF8"></head><body>Součet je ' + x +'</body></html>');
     }

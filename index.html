@@ -25,7 +25,7 @@
         function svatekjindy() {
             let d = document.getElementById("den").valueAsDate;
             fetch("http://localhost:8888/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
-                if (d.getDate() === 1 && d.getMonth() === 4 || d.getDate() === 25 && d.getMonth() === 11){
+                if (d.getDate() === 1 && d.getMonth() === 4 || d.getDate() === 25 && d.getMonth() === 11 || d.getDate() === 1 && d.getMonth() === 0){
                     response.text().then(function(text) {
                         let obj = JSON.parse(text);
                         document.getElementById("svatekjindy").innerHTML = " je "+obj.svatek;
