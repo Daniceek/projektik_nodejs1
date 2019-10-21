@@ -5,16 +5,18 @@
     <title>Danova stránka</title>
     <link rel="icon" href="https://www.regionalnipotravina.cz/files/ocenene-regionalni-potraviny/plzensky-kraj/Jablko-odruda-Julia.jpg">
     <script>
+        const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
         function funkce() {
+            setInterval(seznamZprav, 1000);
             document.getElementById("den").valueAsDate = new Date();
             svatekjindy();
-            fetch("http://localhost:8888/datum").then(function(response) {
+            fetch(HOST+"/datum").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("datum").innerHTML = obj.denvtydnu;
                 });
             });
-            fetch("http://localhost:8888/svatky").then(function(response) {
+            fetch(HOST+"/svatky").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("svatek").innerHTML = obj.svatek;
@@ -22,10 +24,11 @@
                 });
             });
         }
+
         function svatekjindy() {
             let d = document.getElementById("den").valueAsDate;
-            fetch("http://localhost:8888/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
-                if (d.getDate() === 1 && d.getMonth() === 4 || d.getDate() === 25 && d.getMonth() === 11 || d.getDate() === 1 && d.getMonth() === 0){
+            fetch(HOST+"/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
+                if (d.getDate() === 1 && d.getMonth() === 4 || d.getDate() === 25 && d.getMonth() === 11 || d.getDate() === 1 && d.getMonth() === 0 || d.getDate() === 28 && d.getMonth() === 9){
                     response.text().then(function(text) {
                         let obj = JSON.parse(text);
                         document.getElementById("svatekjindy").innerHTML = " je "+obj.svatek;
@@ -38,6 +41,36 @@
                 }
             });
         }
+
+        function posliZpravu() {
+            let prezdivka = document.getElementById("prezdivka").value;
+            let zprava = document.getElementById("zprava").value;
+            fetch(HOST+"/chat/addmsg?msg="+prezdivka+": "+zprava).then(function(response) {
+                response.text().then(function(text) {
+                });
+                document.getElementById("zprava").value = "";
+            });
+
+        }
+
+        function seznamZprav() {
+            fetch(HOST+"/chat/listmsgs").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    let s = "";
+                    for (let o of obj.messages) {
+                        s = s + o.time + ": " + o.text + "<br>";
+                    }
+                    document.getElementById("chatmsgs").innerHTML = s;
+                });
+            });
+        }
+        function enter() {
+            if (event.keyCode === 13) {
+                posliZpravu()
+            }
+        }
+
     </script>
 </head>
 <body onload="funkce()">
@@ -52,6 +85,17 @@ Zde si můžete vyhledat, kdo má v určitý den svátek
 <input type="date" id="den" onchange="svatekjindy()"><span id="svatekjindy"></span>
 <br>
 <br>
+<h1>Chat</h1>
+<input type="text" id="prezdivka" placeholder="Tvoje přezdívka">
+<br>
+<input type="text" id="zprava" onkeydown="enter()" placeholder="Text zprávy">
+<input type="button" value="Odešli" onclick="posliZpravu()">
+<div id="chatmsgs">
+
+</div>
+
+
+<br><br>
 
 <img src="kralicek.jpg">
 

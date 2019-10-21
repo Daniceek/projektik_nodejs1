@@ -1,12 +1,4 @@
-const http = require("http");
-const dateFormat = require("dateformat");
-const fs = require('fs');
 const  url = require("url");
-const apiDenVTydnu = require("./api-denvtydnu").apiDenVTydnu;
-const apiSvatky = require("./api-svatky").apiSvatky;
-const apiChat = require("./api-chat").apiChat;
-
-const DNY = ["Neděle","Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota"]
 const SVATKY = new Array();
 SVATKY[1] = [ "", 'Nový rok', 'Karina', 'Radmila', 'Diana', 'Dalimil', 'Tři králové', 'Vilma', 'Čestmír', 'Vladan', 'Břetislav', 'Bohdana', 'Pravoslav', 'Edita', 'Radovan', 'Alice', 'Ctirad', 'Drahoslav', 'Vladislav', 'Doubravka', 'Ilona', 'Běla', 'Slavomír', 'Zdeněk', 'Milena', 'Miloš', 'Zora', 'Ingrid', 'Otýlie', 'Zdislava', 'Robin', 'Marika'];
 SVATKY[2] = [ "", 'Hynek', 'Nela a Hromnice', 'Blažej', 'Jarmila', 'Dobromila', 'Vanda', 'Veronika', 'Milada', 'Apolena', 'Mojmír', 'Božena', 'Slavěna', 'Věnceslav', 'Valentýn', 'Jiřina', 'Ljuba', 'Miloslava', 'Gizela', 'Patrik', 'Oldřich', 'Lenka', 'Petr', 'Svatopluk', 'Matěj', 'Liliana', 'Dorota', 'Alexandr', 'Lumír', 'Horymír'];
@@ -22,66 +14,26 @@ SVATKY[11] = [ "",'Felix', 'Památka zesnulých', 'Hubert', 'Karel', 'Miriam', '
 SVATKY[12] = [ "",'Iva', 'Blanka', 'Svatoslav', 'Barbora', 'Jitka', 'Mikuláš', 'Ambrož', 'Květoslava', 'Vratislav', 'Julie', 'Dana', 'Simona', 'Lucie', 'Lýdie', 'Radana', 'Albína', 'Daniel', 'Miloslav', 'Ester', 'Dagmar', 'Natálie', 'Šimon', 'Vlasta', 'Adam a Eva , Štědrý den', '1. svátek vánoční', 'Štěpán , 2. svátek vánoční', 'Žaneta', 'Bohumila', 'Judita', 'David', 'Silvestr'];
 
 
-let x = 0;
-let msgs = new Array();
-
-function processStaticFles(res, fileName) {
-    fileName = fileName.substr(1);
-    console.log(fileName);
-    let contenttype = "text/html";
-    if (fileName.endsWith(".png")) {
-        contenttype = "image/png";
-    } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")){
-        contenttype = "image.jpg";
-    }
-
-    if (fs.existsSync(fileName)) {
-        fs.readFile(fileName, function(err, data) {
-            res.writeHead(200, {'Content-Type': contenttype});
-            res.write(data);
-            res.end();
-        });
-    } else {
-        res.writeHead(404);
-        res.end();
-    }
-}
-
-http.createServer((req, res) => {
+exports.apiSvatky =  function (req, res) {
     let q = url.parse(req.url, true);
-    if (q.pathname === "/") {
-        x++;
-        processStaticFles(res, "/index.html");
-        return;
-    }
+    res.writeHead(200, {"ContentType" : "application/json",
+        "Access-Control-Allow-Origin":"*"
+    });
 
-    if (req.url.length - req.url.lastIndexOf(".") <6){
-        processStaticFles(res, req.url);
-        return;
-    }
-    if (q.pathname === "/jinastranka") {
-        res.writeHead(200, {"ContentType" : "text/html"});
-        res.end('<html lang="cs"><head><meta charset="UTF8"></head><body>Našel jsi tajnou stránku</body></html>');
-    }  else if (q.pathname === "/json") {
-        res.writeHead(200, {"ContentType" : "application/json"});
-        let obj = {};
-        obj.jmeno = "Borec";
-        obj.prijmeni = "Je Dan";
-        res.end(JSON.stringify(obj));
-    }  else if (q.pathname === "/jsonpocet") {
-        x++;
-        res.writeHead(200, {"ContentType" : "application/json"});
-        let obj = {};
-        obj.pocet = x;
-        res.end(JSON.stringify(obj));
-    } else if (q.pathname === "/datum") {
-        apiDenVTydnu(req, res);
-    } else if (q.pathname === "/svatky") {
-        apiSvatky(req, res);
-    } else if (q.pathname.startsWith("/chat/")) {
-        apiChat(req, res);
+    let obj = {};
+    if (q.query["m"] && q.query["d"] ) {
+        let d = q.query["d"];
+        let m = q.query["m"];
+        obj.datum = d+"."+m+".";
+        obj.svatek = SVATKY[m][d];
     } else {
-        res.writeHead(200, {"ContentType" : "text/html"});
-        res.end('<html lang="cs"><head><meta charset="UTF8"></head><body>Součet je ' + x +'</body></html>');
+        let d = new Date();
+        let dd = new Date();
+        dd.setDate(dd.getDate() + 1);
+        obj.datum = d.getDate() + ". " + (d.getMonth()+1);
+        obj.svatek = SVATKY[d.getMonth()+1][d.getDate()];
+        obj.svatekzitra = SVATKY[dd.getMonth()+1][dd.getDate()];
     }
-}).listen(8888);
+    res.end(JSON.stringify(obj));
+
+}
