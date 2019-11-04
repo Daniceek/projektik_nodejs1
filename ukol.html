@@ -22,7 +22,7 @@
         function kontrola() {
             fetch(HOST+"/priklady").then(function(response) {
                 response.text().then(function (text) {
-                    let v = document.getElementById("vysledek").value;
+                    let v = Number(document.getElementById("vysledek").value);
                     let c = c1 + c2;
                     if (v === c) {
                         document.getElementById("spravne").innerHTML = "Správně";
