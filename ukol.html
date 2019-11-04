@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Úkol</title>
+    <script>
+        let c1;
+        let c2;
+        const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+        function funkce() {
+            fetch(HOST+"/priklady").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    document.getElementById("cislo1").innerHTML = obj.cislo1;
+                    document.getElementById("cislo2").innerHTML = obj.cislo2;
+                    c1 = obj.cislo1;
+                    c2 = obj.cislo2;
+                });
+            });
+        }
+
+        function kontrola() {
+            fetch(HOST+"/priklady").then(function(response) {
+                response.text().then(function (text) {
+                    let v = document.getElementById("vysledek").value;
+                    let c = c1 + c2;
+                    if (v === c) {
+                        document.getElementById("spravne").innerHTML = "Správně";
+                    } else {
+                        document.getElementById("spravne").innerHTML = "Špatně";
+                    }
+                });
+            });
+        }
+
+    </script>
+</head>
+<body onload="funkce()">
+<h1>Vítejte na mé stránce</h1>
+<br>
+Tady si můžete procvičit počítání různých jednoduchých příkladů:
+<br>
+Příklad :
+<span id="cislo1"></span> + <span id="cislo2"></span>
+<br>
+<input type="number" id="vysledek">
+<input type="button" value="Vyzkoušet" onclick="kontrola()">
+<br>
+Je to: <span id="spravne"></span>
+</body>
+</html>
