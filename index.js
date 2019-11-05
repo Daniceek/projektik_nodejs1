@@ -6,19 +6,6 @@ const apiDenVTydnu = require("./api-denvtydnu").apiDenVTydnu;
 const apiSvatky = require("./api-svatky").apiSvatky;
 const apiChat = require("./api-chat").apiChat;
 
-const MIN_NC = 1;
-const MAX_NC = 100;
-let nc;
-let nc2;
-nc = Math.random();
-nc2 = Math.random();
-console.log(nc);
-console.log(nc2);
-nc = MIN_NC + Math.trunc((MAX_NC-MIN_NC+1)*nc);
-nc2 = MIN_NC + Math.trunc((MAX_NC-MIN_NC+1)*nc2);
-console.log(nc);
-console.log(nc2);
-
 const DNY = ["Neděle","Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota"]
 const SVATKY = new Array();
 SVATKY[1] = [ "", 'Nový rok', 'Karina', 'Radmila', 'Diana', 'Dalimil', 'Tři králové', 'Vilma', 'Čestmír', 'Vladan', 'Břetislav', 'Bohdana', 'Pravoslav', 'Edita', 'Radovan', 'Alice', 'Ctirad', 'Drahoslav', 'Vladislav', 'Doubravka', 'Ilona', 'Běla', 'Slavomír', 'Zdeněk', 'Milena', 'Miloš', 'Zora', 'Ingrid', 'Otýlie', 'Zdislava', 'Robin', 'Marika'];
@@ -85,6 +72,20 @@ http.createServer((req, res) => {
 
 
     }  else if (q.pathname === "/priklady") {
+
+        const MIN_NC = 1;
+        const MAX_NC = 100;
+        let nc;
+        let nc2;
+        nc = Math.random();
+        nc2 = Math.random();
+        console.log(nc);
+        console.log(nc2);
+        nc = MIN_NC + Math.trunc((MAX_NC-MIN_NC+1)*nc);
+        nc2 = MIN_NC + Math.trunc((MAX_NC-MIN_NC+1)*nc2);
+        console.log(nc);
+        console.log(nc2);
+
         res.writeHead(200, {"ContentType" : "application/json"});
         let obj = {};
         obj.cislo1 = nc;
