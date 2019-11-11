@@ -21,7 +21,7 @@ SVATKY[10] = [ "",'Igor', 'Olívie a Oliver', 'Bohumil', 'František', 'Eliška'
 SVATKY[11] = [ "",'Felix', 'Památka zesnulých', 'Hubert', 'Karel', 'Miriam', 'Liběna', 'Saskie', 'Bohumír', 'Bohdan', 'Evžen', 'Martin', 'Benedikt', 'Tibor', 'Sáva', 'Leopold', 'Otmar', 'Mahulena', 'Romana', 'Alžběta', 'Nikola', 'Albert', 'Cecílie', 'Klement', 'Emílie', 'Kateřina', 'Artur', 'Xenie', 'René', 'Zina', 'Ondřej'];
 SVATKY[12] = [ "",'Iva', 'Blanka', 'Svatoslav', 'Barbora', 'Jitka', 'Mikuláš', 'Ambrož', 'Květoslava', 'Vratislav', 'Julie', 'Dana', 'Simona', 'Lucie', 'Lýdie', 'Radana', 'Albína', 'Daniel', 'Miloslav', 'Ester', 'Dagmar', 'Natálie', 'Šimon', 'Vlasta', 'Adam a Eva , Štědrý den', '1. svátek vánoční', 'Štěpán , 2. svátek vánoční', 'Žaneta', 'Bohumila', 'Judita', 'David', 'Silvestr'];
 
-
+let soucet
 let x = 0;
 let msgs = new Array();
 
@@ -71,7 +71,7 @@ http.createServer((req, res) => {
 
 
 
-    }  else if (q.pathname === "/priklady") {
+    }  else if (q.pathname === "/priklady/priklad") {
 
         const MIN_NC = 1;
         const MAX_NC = 100;
@@ -85,12 +85,27 @@ http.createServer((req, res) => {
         nc2 = MIN_NC + Math.trunc((MAX_NC-MIN_NC+1)*nc2);
         console.log(nc);
         console.log(nc2);
+        soucet = nc + nc2;
 
         res.writeHead(200, {"ContentType" : "application/json"});
         let obj = {};
         obj.cislo1 = nc;
         obj.cislo2 = nc2;
         res.end(JSON.stringify(obj));
+
+
+
+    }  else if (q.pathname === "/priklady/kontrola") {
+        res.writeHead(200, {"ContentType" : "application/json"});
+        let obj = {};
+        obj.vysl = q.query["vysl"];
+        obj.true = "spatne";
+        let number = obj.vysl;
+        if (number == soucet) {
+            obj.true = "spravne";
+        }
+        res.end(JSON.stringify(obj));
+
 
 
 

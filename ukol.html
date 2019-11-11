@@ -9,7 +9,7 @@
         const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
         function funkce() {
             document.getElementById("spravne").innerHTML = "Správně";
-            fetch(HOST+"/priklady").then(function(response) {
+            fetch(HOST+"/priklady/priklad").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("cislo1").innerHTML = obj.cislo1;
@@ -21,11 +21,11 @@
         }
 
         function kontrola() {
-            fetch(HOST+"/priklady").then(function(response) {
+            let v = Number(document.getElementById("vysledek").value);
+            fetch(HOST+"/priklady/kontrola?vysl="+v).then(function(response) {
                 response.text().then(function (text) {
-                    let v = Number(document.getElementById("vysledek").value);
-                    let c = c1 + c2;
-                    if (v === c) {
+                    let obj = JSON.parse(text);
+                    if (obj.true === "spravne") {
                         document.getElementById("spravne").innerHTML = "Správně";
                         window.location.reload();
                     } else {
