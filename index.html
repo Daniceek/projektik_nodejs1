@@ -45,10 +45,14 @@
         function posliZpravu() {
             let prezdivka = document.getElementById("prezdivka").value;
             let zprava = document.getElementById("zprava").value;
-            fetch(HOST+"/chat/addmsg?msg="+prezdivka+": "+zprava).then(function(response) {
+            fetch(HOST+"/chat/addmsg?msg="+zprava).then(function(response) {
                 response.text().then(function(text) {
                 });
                 document.getElementById("zprava").value = "";
+            });
+            fetch(HOST+"/chat/addmsg?nck="+prezdivka).then(function(response) {
+                response.text().then(function(text) {
+                });
             });
 
         }
@@ -59,17 +63,20 @@
                     let obj = JSON.parse(text);
                     let s = "";
                     for (let o of obj.messages) {
-                        s = s + o.time + ": " + o.text + "<br>";
+                        s = s + o.time + ": " + o.nickname + ": " + o.text + "<br>";
                     }
                     document.getElementById("chatmsgs").innerHTML = s;
                 });
             });
         }
+
         function enter() {
             if (event.keyCode === 13) {
                 posliZpravu();
             }
         }
+
+
 
     </script>
 </head>

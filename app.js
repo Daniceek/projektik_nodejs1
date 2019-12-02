@@ -5,6 +5,7 @@ const  url = require("url");
 const apiDenVTydnu = require("./api-denvtydnu").apiDenVTydnu;
 const apiSvatky = require("./api-svatky").apiSvatky;
 const apiChat = require("./api-chat").apiChat;
+const uniqid = require("uniqid");
 
 const DNY = ["Neděle","Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota"]
 const SVATKY = new Array();
@@ -24,6 +25,8 @@ SVATKY[12] = [ "",'Iva', 'Blanka', 'Svatoslav', 'Barbora', 'Jitka', 'Mikuláš',
 let soucet
 let x = 0;
 let msgs = new Array();
+let mereni = new Array();
+let tmStart;
 
 function processStaticFles(res, fileName) {
     fileName = fileName.substr(1);
@@ -53,6 +56,28 @@ http.createServer((req, res) => {
         x++;
         processStaticFles(res, "/index.html");
         return;
+    }
+
+    if (q.pathname === "/start") {
+        res.writeHead(200, {"ContentType" : "application/json"});
+        let m = {};
+        let obj = {};
+        m.tmStart = new Date().getTime();
+        let newId = uniqid();
+        mereni[newId] = m;
+        obj.id = newId;
+        obj.status = "Stopky spusteny";
+        res.end(JSON.stringify(obj));
+    } else if (q.pathname === "/stop") {
+        let obj = {};
+        let q = url.parse(req.url, true);
+        let tmStop = new Date().getTime();
+        let id = q.query.id;
+        console.log(id);
+        let m = mereni[id];
+        obj.status = "Stopky zastaveny";
+        obj.durSec = ((tmStop - m.tmStart)/1000).toFixed(1);
+        res.end(JSON.stringify(obj));
     }
 
     if (req.url.length - req.url.lastIndexOf(".") <6){
@@ -125,4 +150,4 @@ http.createServer((req, res) => {
         res.writeHead(200, {"ContentType" : "text/html"});
         res.end('<html lang="cs"><head><meta charset="UTF8"></head><body>Součet je ' + x +'</body></html>');
     }
-}).listen(8888);
+}).listen(8080);

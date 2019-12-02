@@ -15,6 +15,7 @@ exports.apiChat =  function (req, res) {
             "Access-Control-Allow-Origin":"*"
         });
         let obj = {};
+        obj.nickname = q.query["nck"];
         obj.text = q.query["msg"];
         obj.time = new Date();
         msgs.push(obj);
