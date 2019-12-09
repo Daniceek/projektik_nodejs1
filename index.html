@@ -6,9 +6,10 @@
     <link rel="icon" href="https://www.regionalnipotravina.cz/files/ocenene-regionalni-potraviny/plzensky-kraj/Jablko-odruda-Julia.jpg">
     <script>
         const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+        //const HOST = "http://localhost:8080";
         function funkce() {
             setInterval(seznamZprav, 1000);
-            document.getElementById("den").valueAsDate = new Date();
+            document.getElementById("den").valueAsDate = "17";
             svatekjindy();
             fetch(HOST+"/datum").then(function(response) {
                 response.text().then(function(text) {
@@ -45,14 +46,16 @@
         function posliZpravu() {
             let prezdivka = document.getElementById("prezdivka").value;
             let zprava = document.getElementById("zprava").value;
-            fetch(HOST+"/chat/addmsg?msg="+zprava).then(function(response) {
+            let body = {};
+            body.msg = zprava;
+            body.nickname = prezdivka;
+            let options = {};
+            options.method = "POST";
+            options.body = JSON.stringify(body);
+            fetch(HOST+"/chat/addmsg", options).then(function(response) {
                 response.text().then(function(text) {
                 });
                 document.getElementById("zprava").value = "";
-            });
-            fetch(HOST+"/chat/addmsg?nck="+prezdivka).then(function(response) {
-                response.text().then(function(text) {
-                });
             });
 
         }

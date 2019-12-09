@@ -3,7 +3,6 @@ const DNY = ["Neděle","Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobo
 
 exports.apiDenVTydnu =  function (req, res) {
     res.writeHead(200, {"ContentType" : "application/json",
-        "Access-Control-Allow-Origin":"*"
     });
     let d = new Date();
     let obj = {};
