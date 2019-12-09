@@ -9,7 +9,7 @@
         //const HOST = "http://localhost:8080";
         function funkce() {
             setInterval(seznamZprav, 1000);
-            document.getElementById("den").valueAsDate = "17";
+            document.getElementById("den").valueAsDate = new Date();
             svatekjindy();
             fetch(HOST+"/datum").then(function(response) {
                 response.text().then(function(text) {
