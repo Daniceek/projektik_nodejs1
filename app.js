@@ -5,6 +5,7 @@ const  url = require("url");
 const apiDenVTydnu = require("./api-denvtydnu").apiDenVTydnu;
 const apiSvatky = require("./api-svatky").apiSvatky;
 const apiChat = require("./api-chat").apiChat;
+const apiUsers = require("./api-users").apiUsers;
 const uniqid = require("uniqid");
 
 const DNY = ["Neděle","Pondělí","Úterý","Středa","Čtvrtek","Pátek","Sobota"]
@@ -146,6 +147,8 @@ http.createServer((req, res) => {
         apiSvatky(req, res);
     } else if (q.pathname.startsWith("/chat/")) {
         apiChat(req, res);
+    } else if (q.pathname.startsWith("/users/")) {
+        apiUsers(req, res);
     } else {
         res.writeHead(200, {"ContentType" : "text/html"});
         res.end('<html lang="cs"><head><meta charset="UTF8"></head><body>Součet je ' + x +'</body></html>');

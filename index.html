@@ -9,6 +9,7 @@
         //const HOST = "http://localhost:8080";
         function funkce() {
             setInterval(seznamZprav, 1000);
+            setInterval(listUsers, 1000);
             document.getElementById("den").valueAsDate = new Date();
             svatekjindy();
             fetch(HOST+"/datum").then(function(response) {
@@ -73,9 +74,61 @@
             });
         }
 
+        function listUsers() {
+            fetch(HOST+"/users/listusers").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    let s = "";
+                    for (let o of obj.users) {
+                        s = s + "Jméno: " + o.jmeno + " Heslo: " + o.heslo + "<br>";
+                    }
+                    document.getElementById("divlistusers").innerHTML = s;
+                });
+            });
+        }
+
+
+        function register_zobrazit_div() {
+            document.getElementById("divregister").style.display = "block";
+            document.getElementById("divlogin").style.display = "none";
+        }
+
+        function addUser() {
+            let nickname = document.getElementById("rlogin").value;
+            let password = document.getElementById("rpassword").value;
+            let password2 = document.getElementById("rpassword2").value;
+            let body = {};
+            if (password == password2) {
+                body.nickname = nickname;
+                body.password = password;
+                let options = {};
+                options.method = "POST";
+                options.body = JSON.stringify(body);
+                fetch(HOST+"/users/adduser", options).then(function(response) {
+                    response.text().then(function(text) {
+                    });
+                    document.getElementById("zprava").value = "";
+                });
+                document.getElementById("divregister").style.display = "none";
+                document.getElementById("divlogin").style.display = "block";
+            }
+        }
+
         function enter() {
             if (event.keyCode === 13) {
                 posliZpravu();
+            }
+        }
+
+        function enter2() {
+            if (event.keyCode === 13) {
+                login();
+            }
+        }
+
+        function enter3() {
+            if (event.keyCode === 13) {
+                addUser();
             }
         }
 
@@ -95,6 +148,34 @@ Zde si můžete vyhledat, kdo má v určitý den svátek
 <input type="date" id="den" onchange="svatekjindy()"><span id="svatekjindy"></span>
 <br>
 <br>
+<div id="divlogin">
+    <h1>Přihlášení</h1>
+    Přihlašovací jméno:
+    <input type="text" id="login">
+    <br>
+    Heslo:
+    <input type="password" id="password" onkeydown="enter2()">
+    <br>
+    <input type="button" value="Přihlásit" onclick="login()">
+    <input type="button" value="Registrovat" onclick="register_zobrazit_div()">
+    <h2>Zaregistrovaní uživatelé:</h2>
+    <div id="divlistusers">
+
+    </div>
+</div>
+<div id="divregister" style="display: none">
+    <h1>Registrace</h1>
+    Přihlašovací jméno:
+    <input type="text" id="rlogin">
+    <br>
+    Heslo:
+    <input type="password" id="rpassword">
+    <br>
+    Heslo znovu:
+    <input type="password" id="rpassword2" onkeydown="enter3()">
+    <br>
+    <input type="button" value="Registrovat" onclick="addUser()">
+</div>
 <h1>Chat</h1>
 <input type="text" id="prezdivka" placeholder="Tvoje přezdívka">
 <br>
