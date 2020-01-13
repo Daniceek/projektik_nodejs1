@@ -99,19 +99,46 @@
             let password2 = document.getElementById("rpassword2").value;
             let body = {};
             if (password == password2) {
-                body.nickname = nickname;
-                body.password = password;
-                let options = {};
-                options.method = "POST";
-                options.body = JSON.stringify(body);
-                fetch(HOST+"/users/adduser", options).then(function(response) {
-                    response.text().then(function(text) {
+                if (nickname == "Dlažka") {
+                    document.getElementById("znova").innerHTML = "Ani to nezkoušej Dlažko!";
+                } else {
+                    body.nickname = nickname;
+                    body.password = password;
+                    let options = {};
+                    options.method = "POST";
+                    options.body = JSON.stringify(body);
+                    fetch(HOST+"/users/adduser", options).then(function(response) {
+                        response.text().then(function(text) {
+                            let obj = JSON.parse(text);
+                            if (obj.error) {
+                                alert(obj.error);
+                            }
+                        });
+                        document.getElementById("zprava").value = "";
                     });
-                    document.getElementById("zprava").value = "";
-                });
-                document.getElementById("divregister").style.display = "none";
-                document.getElementById("divlogin").style.display = "block";
+                    document.getElementById("divregister").style.display = "none";
+                    document.getElementById("divlogin").style.display = "block";
+                }
+
+            } else {
+                document.getElementById("znova").innerHTML = "Zkus to znovu";
             }
+        }
+
+        function login() {
+            let nickname = document.getElementById("login").value;
+            let password = document.getElementById("password").value;
+            let body = {};
+            body.nickname = nickname;
+            body.password = password;
+            let options = {};
+            options.method = "POST";
+            options.body = JSON.stringify(body);
+            fetch(HOST+"/users/login", options).then(function(response) {
+                response.text().then(function(text) {
+                });
+                document.getElementById("zprava").value = "";
+            });
         }
 
         function enter() {
@@ -158,6 +185,8 @@ Zde si můžete vyhledat, kdo má v určitý den svátek
     <br>
     <input type="button" value="Přihlásit" onclick="login()">
     <input type="button" value="Registrovat" onclick="register_zobrazit_div()">
+    <br>
+    <span id="prihlasen"></span>
     <h2>Zaregistrovaní uživatelé:</h2>
     <div id="divlistusers">
 
@@ -175,6 +204,8 @@ Zde si můžete vyhledat, kdo má v určitý den svátek
     <input type="password" id="rpassword2" onkeydown="enter3()">
     <br>
     <input type="button" value="Registrovat" onclick="addUser()">
+    <br>
+    <span id="znova"></span>
 </div>
 <h1>Chat</h1>
 <input type="text" id="prezdivka" placeholder="Tvoje přezdívka">
