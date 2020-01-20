@@ -1,6 +1,5 @@
 const url = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
-const entities = new Entities();
 const fs = require('fs');
 const crypto = require("crypto");
 
@@ -22,51 +21,36 @@ function hashovat(pw) {
 }
 
 exports.apiUsers = function (req, res) {
-    let q = url.parse(req.url, true);
-    if (q.pathname == "/users/listusers") {
+    if (req.pathname == "/users/listusers") {
         res.writeHead(200, {
             "Content-type": "application/json",
         });
         let obj = {};
         obj.users = users;
         res.end(JSON.stringify(obj));
-    } else if (q.pathname == "/users/adduser") {
-        let data = "";
-        req.on('data', function (chunk) {
-            try {
-                data += chunk;
-            } catch (e) {
-                console.error(e);
+    } else if (req.pathname == "/users/adduser") {
+        res.writeHead(200, {
+            "Content-type": "application/json",
+        });
+        let obj = {};
+        obj.jmeno = req.parameters.nickname;
+        let userExists = false;
+        for (let u of users) {
+            if (u.jmeno === obj.jmeno) {
+                userExists = true;
+                break;
             }
-        })
-        req.on('end', function () {
-            req.rawBody = data;
-            if (data) {
-                let params = JSON.parse(data);
-                res.writeHead(200, {
-                    "Content-type": "application/json",
-                });
-                let obj = {};
-                obj.jmeno = entities.encode(params["nickname"]);
-                let userExists = false;
-                for (let u of users) {
-                    if (u.jmeno === obj.jmeno) {
-                        userExists = true;
-                        break;
-                    }
-                }
-                if (userExists) {
-                    obj.error = "user exists";
-                } else {
-                    obj.heslo = hashovat(entities.encode(params["password"]));
-                    users.push(obj);
-                    fs.writeFileSync("users.json", JSON.stringify(users, null, 2));
+        }
+        if (userExists) {
+            obj.error = "user exists";
+        } else {
+            obj.heslo = hashovat(req.parameters.password);
+            users.push(obj);
+            fs.writeFileSync("users.json", JSON.stringify(users, null, 2));
 
-                }
-                res.end(JSON.stringify(obj));
-            }
-        })
-    } else if (q.pathname == "/users/login") {
+        }
+        res.end(JSON.stringify(obj));
+    } else if (req.pathname == "/users/login") {
         let data = "";
         req.on('data', function (chunk) {
             try {
@@ -78,13 +62,12 @@ exports.apiUsers = function (req, res) {
         req.on('end', function () {
             req.rawBody = data;
             if (data) {
-                let params = JSON.parse(data);
                 res.writeHead(200, {
                     "Content-type": "application/json",
                 });
                 let obj = {};
-                obj.jmeno = entities.encode(params["nickname"]);
-                obj.heslo = hashovat(entities.encode(params["password"]));
+                obj.jmeno = req.parameters.nickname;
+                obj.heslo = hashovat(req.parameters.password);
                 for (let u of users) {
                     if (u.heslo === obj.heslo) {
                         userExists = true;

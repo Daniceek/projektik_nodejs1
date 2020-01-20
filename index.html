@@ -102,22 +102,26 @@
                 if (nickname == "Dlažka") {
                     document.getElementById("znova").innerHTML = "Ani to nezkoušej Dlažko!";
                 } else {
-                    body.nickname = nickname;
-                    body.password = password;
-                    let options = {};
-                    options.method = "POST";
-                    options.body = JSON.stringify(body);
-                    fetch(HOST+"/users/adduser", options).then(function(response) {
-                        response.text().then(function(text) {
-                            let obj = JSON.parse(text);
-                            if (obj.error) {
-                                alert(obj.error);
-                            }
+                    if (password == "heslo") {
+                        document.getElementById("znova").innerHTML = "Zvol si jiné heslo, tohle by prolomil každý";
+                    } else {
+                        body.nickname = nickname;
+                        body.password = password;
+                        let options = {};
+                        options.method = "POST";
+                        options.body = JSON.stringify(body);
+                        fetch(HOST+"/users/adduser", options).then(function(response) {
+                            response.text().then(function(text) {
+                                let obj = JSON.parse(text);
+                                if (obj.error) {
+                                    alert(obj.error);
+                                }
+                            });
+                            document.getElementById("zprava").value = "";
                         });
-                        document.getElementById("zprava").value = "";
-                    });
-                    document.getElementById("divregister").style.display = "none";
-                    document.getElementById("divlogin").style.display = "block";
+                        document.getElementById("divregister").style.display = "none";
+                        document.getElementById("divlogin").style.display = "block";
+                    }
                 }
 
             } else {

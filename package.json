@@ -13,6 +13,7 @@
     "dateformat": "^3.0.3",
     "html-entities": "^1.2.1",
     "localtunnel": "^2.0.0",
+    "spaserver": "git+https://github.com/liborsvejda/spaserver.git",
     "uniqid": "^5.2.0"
   }
 }
