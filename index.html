@@ -5,10 +5,11 @@
     <title>Danova stránka</title>
     <link rel="icon" href="https://www.regionalnipotravina.cz/files/ocenene-regionalni-potraviny/plzensky-kraj/Jablko-odruda-Julia.jpg">
     <script>
+        let token;
         const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
         //const HOST = "http://localhost:8080";
         function funkce() {
-            setInterval(seznamZprav, 1000);
+            document.getElementById("prihlasen").innerHTML = "NEpřihlášen";
             setInterval(listUsers, 1000);
             document.getElementById("den").valueAsDate = new Date();
             svatekjindy();
@@ -62,14 +63,18 @@
         }
 
         function seznamZprav() {
-            fetch(HOST+"/chat/listmsgs").then(function(response) {
+            fetch(HOST+"/chat/listmsgs?token="+token).then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
-                    let s = "";
-                    for (let o of obj.messages) {
-                        s = s + o.time + ": " + o.nickname + ": " + o.text + "<br>";
+                    if (obj.error) {
+                        console.log(obj.error);
+                    } else {
+                        let s = "";
+                        for (let o of obj.messages) {
+                            s = s + o.time + ": " + o.nickname + ": " + o.text + "<br>";
+                        }
+                        document.getElementById("chatmsgs").innerHTML = s;
                     }
-                    document.getElementById("chatmsgs").innerHTML = s;
                 });
             });
         }
@@ -140,6 +145,15 @@
             options.body = JSON.stringify(body);
             fetch(HOST+"/users/login", options).then(function(response) {
                 response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    if (obj.error) {
+                        alert(obj.error);
+                    } else {
+                        token = obj.token;
+                        setInterval(seznamZprav, 1000);
+                        document.getElementById("prihlasen").innerHTML = "Přihlášen";
+                        document.getElementById("prezdivka").value = nickname;
+                    }
                 });
                 document.getElementById("zprava").value = "";
             });
@@ -201,7 +215,7 @@ Zde si můžete vyhledat, kdo má v určitý den svátek
     Přihlašovací jméno:
     <input type="text" id="rlogin">
     <br>
-    Heslo:
+    Heslo: (aby vám to fungovalo, musíte si nastavit heslo dan)
     <input type="password" id="rpassword">
     <br>
     Heslo znovu:

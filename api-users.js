@@ -8,6 +8,9 @@ if (fs.existsSync("users.json")) {
     users = JSON.parse(fs.readFileSync("users.json"));
 }
 
+let loggedUsers = new Array();
+
+
 function hashovat(pw) {
     //let hashPw = crypto.createHash("md5").update(pw).digest("hex");
     //hashPw = hashPw.split("").reverse().join("");
@@ -51,33 +54,32 @@ exports.apiUsers = function (req, res) {
         }
         res.end(JSON.stringify(obj));
     } else if (req.pathname == "/users/login") {
-        let data = "";
-        req.on('data', function (chunk) {
-            try {
-                data += chunk;
-            } catch (e) {
-                console.error(e);
-            }
-        })
-        req.on('end', function () {
-            req.rawBody = data;
-            if (data) {
-                res.writeHead(200, {
-                    "Content-type": "application/json",
-                });
-                let obj = {};
-                obj.jmeno = req.parameters.nickname;
-                obj.heslo = hashovat(req.parameters.password);
-                for (let u of users) {
-                    if (u.heslo === obj.heslo) {
-                        userExists = true;
-                        break;
-                    }
+        res.writeHead(200, {
+            "Content-type": "application/json",
+        });
+        let obj = {};
+        let login = req.parameters.login;
+        obj.error = "invalid login or password";
+        for (let u of users) {
+            if (u.jmeno === req.parameters.nickname) {
+                if (u.heslo === hashovat(req.parameters.password)) {
+                    obj.name = u.jmeno;
+                    obj.error = null;
+                    console.log(u.heslo);
+                    let token = crypto.randomBytes(16).toString('hex'); //32 nahodnych znaku
+                    obj.token = token;
+                    let objLoggedUser = {};
+                    objLoggedUser.name = u.jmeno;
+                    loggedUsers[token] = objLoggedUser;
                 }
-
-
-                res.end(JSON.stringify(obj));
+                break;
             }
-        })
+        }
+        res.end(JSON.stringify(obj));
     }
 };
+
+exports.getLoggedUser = function (token) {
+    let u = loggedUsers[token];
+    return u;
+}

@@ -1,4 +1,5 @@
 const url = require('url');
+const {getLoggedUser} = require("./api-users");
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 
@@ -12,6 +13,12 @@ exports.apiChat = function (req, res) {
             "Content-type": "application/json",
         });
         let obj = {};
+        let loggedUser = getLoggedUser(req.parameters.token);
+        if (loggedUser) {
+            obj.messages = msgs;
+        } else {
+            obj.error = "Uživatel není přihlášen"
+        }
         obj.messages = msgs;
         res.end(JSON.stringify(obj));
     } else if (q.pathname == "/chat/addmsg") {
